@@ -11,7 +11,7 @@ import com.gestioManuel.gestioManuel.backend.business.model.Topo;
 @Service
 public interface TopoService {
 
-	Long create(Topo topo);           //C
-	Optional<Topo> read(Long id);     //R
+	Long create(Topo topo);
+	Optional<Topo> read(Long id);
 	List<Topo> getAll();
 }

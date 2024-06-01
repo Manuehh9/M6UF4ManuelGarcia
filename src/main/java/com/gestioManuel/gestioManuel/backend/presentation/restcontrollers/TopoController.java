@@ -4,58 +4,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.gestioManuel.gestioManuel.backend.business.model.Topo;
 import com.gestioManuel.gestioManuel.backend.business.services.TopoService;
 import com.gestioManuel.gestioManuel.backend.presentation.config.RespuestaError;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/topos")
 public class TopoController {
 
-	@Autowired
+    @Autowired
     private TopoService topoService;
 
-    @GetMapping("/topos")
+    @GetMapping
     public List<Topo> getAll() {
         return topoService.getAll();
     }
 
-    @GetMapping("/topos/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> read(@PathVariable Long id) {
-
         if (id > 300) {
-            throw new RuntimeException("El número " + id + " no es válido.");
+            throw new IllegalArgumentException("El número " + id + " no es válido.");
         }
 
         Optional<Topo> optional = topoService.read(id);
 
         if (optional.isEmpty()) {
             RespuestaError respuestaError = new RespuestaError("No se encuentra el topo con id " + id);
-            return new ResponseEntity<>(respuestaError, HttpStatus.NOT_FOUND);
+            return ResponseEntity.badRequest().body(respuestaError); // Cambiado a badRequest
         }
 
         return ResponseEntity.ok(optional.get());
     }
-    
-    // ****************************************************
-    //
-    // Gestión de excepciones
-    //
-    // ****************************************************
 
     @ExceptionHandler({IllegalArgumentException.class, ClassCastException.class})
-    public ResponseEntity<?> gestor1(Exception e) {
-        return ResponseEntity.badRequest().body(new RespuestaError(e.getMessage()));
+    public ResponseEntity<?> handleBadRequest(Exception e) {
+        RespuestaError respuestaError = new RespuestaError(e.getMessage());
+        return ResponseEntity.badRequest().body(respuestaError);
     }
-
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> gestor2(Exception e) {
-        return ResponseEntity.badRequest().body(new RespuestaError(e.getMessage()));
+    public ResponseEntity<?> handleInternalServerError(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new RespuestaError("Error interno del servidor: " + e.getMessage()));
     }
-
 }
+

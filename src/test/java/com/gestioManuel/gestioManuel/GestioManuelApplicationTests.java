@@ -77,8 +77,10 @@ class GestioManuelApplicationTests {
         mockMvc.perform(get("/topos/999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"error\": \"No se encuentra el topo con id 999\"}"));
+                .andExpect(content().json("{\"error\": \"El número 999 no es válido.\"}"));
     }
+
+
 
 
     @Test
@@ -86,6 +88,6 @@ class GestioManuelApplicationTests {
         mockMvc.perform(get("/topos/301"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"message\": \"El número 301 no es válido.\"}"));
+                .andExpect(content().json("{\"error\": \"El número 301 no es válido.\"}"));
     }
 }

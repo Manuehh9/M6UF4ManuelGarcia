@@ -26,18 +26,20 @@ public class TopoController {
     @GetMapping("/{id}")
     public ResponseEntity<?> read(@PathVariable Long id) {
         if (id > 300) {
-            throw new IllegalArgumentException("El número " + id + " no es válido.");
+            RespuestaError respuestaError = new RespuestaError("El número " + id + " no es válido.");
+            return ResponseEntity.badRequest().body(respuestaError);
         }
 
         Optional<Topo> optional = topoService.read(id);
 
         if (optional.isEmpty()) {
             RespuestaError respuestaError = new RespuestaError("No se encuentra el topo con id " + id);
-            return ResponseEntity.badRequest().body(respuestaError); // Cambiado a badRequest
+            return ResponseEntity.badRequest().body(respuestaError);
         }
 
         return ResponseEntity.ok(optional.get());
     }
+
 
     @ExceptionHandler({IllegalArgumentException.class, ClassCastException.class})
     public ResponseEntity<?> handleBadRequest(Exception e) {
